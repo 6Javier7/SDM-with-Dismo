@@ -174,8 +174,6 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                 if (length(tr@coords) > length(ts@coords)) {train <- tr
                 test <- ts} else {test <- tr
                 train <- ts}
-                #plot(train, col = "blue")
-                #plot(test, col = "red")
                 
                 
                 #background
@@ -195,7 +193,7 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                 pa <- c(rep(1, nrow(p)), rep(0, nrow(a))) #presente en el test y ausente en el entorno
                 pder <- as.data.frame(rbind(p, a))
                 
-                mod <- dismo::maxent(x = pder, p = pa, factors = "biome", nbg = 5000,, args = c("-J", "-P")) #modelo de distribucion de especies
+                mod <- dismo::maxent(x = pder, p = pa, factors = "biome", nbg = 5000, args = c("-J", "-P")) #modelo de distribucion de especies
                 
                 response(mod) #Ponderacion de la variacion de cada variables
                 ped1 <- predict(mod, areas1) #Extrapolacion del modelo en todo Colombia
@@ -257,21 +255,19 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                         geom_density(alpha = .3, linetype = "dashed", color = "coral", linewidth = 1) +
                         geom_vline(aes(xintercept = mean(boot)),
                                    color = "coral", linewidth = 1) +
-                        #geom_vline(aes(xintercept = median(boot)),
-                        #      color = "orchid", linetype = "dashed", linewidth = 1) +
                         annotate("text", label = paste("Boot Prom. =", with(bo, round(t0, 3))), x = quantile(d$x, .75), y = max(d$y), size = 4, color = "coral") +
                         theme_classic() + labs(x = "AUC", y = "Densidad", title = paste0("Histograma Boot ", sp)) +
                         theme(plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"))
                 
                 p2
-                ggsave(paste0(paste0(sp, count), " boot hist.png"), path = "/Users/javiermontanochiriboga/Documents/Javier/Packages/Neutral1/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
+                ggsave(paste0(paste0(sp, count), " boot hist.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
                 
                 
                 p3 <- ggplot(bdf, aes(sample = boot))+ stat_qq_line(colour = "grey58", linewidth = 1.0) + theme_classic() + stat_qq(colour = "coral", size = 1.6) + labs(x = "", y = "", title = paste0("QQ plot boot "), sp) +
                         theme(plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"))
                 
                 p3
-                ggsave(paste0(paste0(sp, count)," boot qqplot.png"), path = "/Users/javiermontanochiriboga/Documents/Javier/Packages/Neutral1/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2) 
+                ggsave(paste0(paste0(sp, count)," boot qqplot.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2) 
                 
                 p1 <- ggplot() +
                         geom_polygon(data = wrld, mapping = aes(x = long, y = lat, group = group), fill = "white") + geom_raster(data = dfp, aes(x = x, y = y, fill = layer)) +  scale_fill_gradientn(colors = terrain.colors(10, rev = T))  +  coord_fixed(xlim = c(xmin, xmax), ylim = c(ymin, ymax), expand = F) + # expand = F fixes weird margin
@@ -280,7 +276,7 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                         borders("state") + labs(title = paste("SDM", sp), x = "Longitud", y = "Latitud", fill = "Pontencial") + theme(legend.box.background = element_blank(), legend.box.margin = margin(5,5,5,5), plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"), legend.key = element_rect(fill = "white", colour = "white"), legend.title = element_text(colour = "grey58"))
                 
                 p1
-                ggsave(paste0(paste0(sp, count)," potencial.png"), path = "/Users/javiermontanochiriboga/Documents/Javier/Packages/Neutral1/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
+                ggsave(paste0(paste0(sp, count)," potencial.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
                 
                 inter <- boot.ci(bo, type = "basic")
                 
