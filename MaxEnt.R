@@ -25,7 +25,7 @@ library(sf)
 
 #Datos
 
-usuario <- "Biologx" #cuenta de gbif
+usuarix <- "Biologx" #cuenta de gbif
 contras <- "AsiliiPower" #contraseña en gbif
 correo <- "Biologx@mail.com" #email en gbif
 
@@ -44,7 +44,7 @@ keys1 <- occ_download(
         pred("hasCoordinate", TRUE),
         pred("occurrenceStatus","PRESENT"),
         format = "SIMPLE_CSV",
-        user = usuario, pwd = contras, email = correo
+        user = usuarix, pwd = contras, email = correo
 ) #para descargar los registros
 
 keys2 <- grep("^", keys1, value = T)
