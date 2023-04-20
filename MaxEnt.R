@@ -23,8 +23,8 @@ library(sf)
 
 ##################Pruebas#######################
 
-
-gb <- read.csv("spp")
+spp <- c("Candelaria concolor")
+gb <- data.frame(Especie = spp)
 keys <- 
         gb %>%
         pull("Especie") %>%
