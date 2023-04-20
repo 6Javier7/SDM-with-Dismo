@@ -25,6 +25,10 @@ library(sf)
 
 #Datos
 
+usuario <- "Biologx" #usuario de gbif
+contras <- "AsiliiPower" #contraseña en gbif
+correo <- "Biologx@mail.com" #email en gbif
+
 spp <- c("Candelaria concolor")
 gb <- data.frame(Especie = spp)
 keys <- 
@@ -40,7 +44,7 @@ keys1 <- occ_download(
         pred("hasCoordinate", TRUE),
         pred("occurrenceStatus","PRESENT"),
         format = "SIMPLE_CSV",
-        user = "javier_biologia", pwd = "Biologia20-", email = "6Javier7@gmail.com"
+        user = usuario, pwd = contras, email = correo
 ) #para descargar los registros
 
 keys2 <- grep("^", keys1, value = T)
