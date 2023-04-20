@@ -25,7 +25,7 @@ library(sf)
 
 #Datos
 
-usuario <- "Biologx" #usuario de gbif
+usuario <- "Biologx" #cuenta de gbif
 contras <- "AsiliiPower" #contraseña en gbif
 correo <- "Biologx@mail.com" #email en gbif
 
