@@ -1,4 +1,6 @@
-MaXent
+#MaXent
+
+#Paquetes
 
 library(tidyverse)
 library(data.table)
@@ -21,7 +23,7 @@ library(rgbif)
 library(geodata)
 library(sf)
 
-##################Pruebas#######################
+#Datos
 
 spp <- c("Candelaria concolor")
 gb <- data.frame(Especie = spp)
@@ -30,7 +32,7 @@ keys <-
         pull("Especie") %>%
         name_backbone_checklist()  %>%
         filter(!matchType == "NONE") %>%
-        pull(usageKey)
+        pull(usageKey) #crea un archivo con los codigos del gbif
 
 keys1 <- occ_download(
         pred_in("taxonKey", keys),
@@ -38,61 +40,49 @@ keys1 <- occ_download(
         pred("hasCoordinate", TRUE),
         pred("occurrenceStatus","PRESENT"),
         format = "SIMPLE_CSV",
-        user="javier_biologia",pwd="Biologia20-",email="6Javier7@gmail.com"
-)
+        user = "javier_biologia", pwd = "Biologia20-", email = "6Javier7@gmail.com"
+) #para descargar los registros
 
-keys2 <- grep("^",keys1, value = T) #Leptogium "0146333-230224095556074"
-keys2 <- "0146333-230224095556074"
-keys3 <- occ_download_wait(keys2)
+keys2 <- grep("^", keys1, value = T)
+keys3 <- occ_download_wait(keys2) #revisar si ya se descargaron
 keys4 <- grep("^",keys3, value = T)
 
 status <- keys4[8]
 
 
 #cambia cada descarga fijate en el nombre del mensaje despues de correr occ_download
-keys2 <- "0146333-230224095556074"
 d <- 
         occ_download_get(keys2) %>%
-        occ_download_import()
+        occ_download_import() #archivo con los datos
 
-d1 <- d[, c(10, 22, 23, 36)]
+d1 <- d[, c(10, 22, 23, 36)] #solo dejar el nombre, las coordenadas y el tipo de observacion
 colnames(d1) <- c("especies", "lat", "lon", "basisOfRecord")
-d1 <- subset(d1,!is.na(lat) & !is.na(lon))
-d1 <- data.table(d1)
-d1 <- d1[!especies == ""]
+d1 <- subset(d1,!is.na(lat) & !is.na(lon)) #filtrar datos sin coordenadas en x o en y
+d1 <- data.table(d1) #cambia de data.frame a data.table
+d1 <- d1[!especies == ""] #quitar los registros sin nobre cinetifico
 
-pru <- with(d1, data.table(especies, cor = paste(lat, lon))) 
+pru <- with(d1, data.table(especies, cor = paste(lat, lon))) #la idea es crear pru para filtar duplicaods(registros de las mismas coordenads)
 pru <- pru %>% group_by(especies) %>% duplicated(by = key(cor))
-d2 <- d1[!pru]
-dp <- subset(d2, basisOfRecord == "PRESERVED_SPECIMEN")
-with(dp, sort(table(especies)))
+d2 <- d1[!pru] #filtro de duplicados
+dp <- subset(d2, basisOfRecord == "PRESERVED_SPECIMEN") #filtro de especimes de herbario
+with(dp, sort(table(especies))) #numero de registros por especie
 spp <- with(d1, unique(especies))
 
 
 
-setwd("/Users/javiermontanochiriboga/Documents/Javier/Packages/Neutral1")
-colombia1 <- getData('GADM' , country = "COL", level = 1)
-#colombia1 <- gadm("COL", level = 1, path = tempdir())
-#fra <- gadm(country="FRA", level=1, path =tempdir())
-setwd("/Users/javiermontanochiriboga/Documents/Javier/Packages/Neutral1")
-cli2 <- worldclim_country("Colombia", var = 'bio', res = 0.5, path = getwd())
-#cli2 <- worldclim_country("Colombia", var = 'bio', res = 0.5, path = tempdir())
-for (i in 1:16){assign(paste0("c", i), cli2[[i]])}
+colombia1 <- getData('GADM' , country = "COL", level = 1) #shape de Colombia
+cli2 <- worldclim_country("Colombia", var = 'bio', res = 0.5, path = getwd()) #datos clima para Colombia
+for (i in 1:16){assign(paste0("c", i), cli2[[i]])} #separacion de los raster del clima
 
-c17 <- elevation_30s("Colombia", path = getwd())
-#c17 <- elevation_30s("Colombia", path = tempdir())
-#c[[17]] <- c17
+c17 <- elevation_30s("Colombia", path = getwd()) #Raster de alturas
 
-#clima2 <- mask(clima2, colombia1)
-#climag <- elevation_global(0.5, path = "~/Downloads/")
-#clima3 <- elevation_30s("Colombia", path = "~/Downloads/")
-
-datos1 <- d2[, -c(1, 4)]
-coordinates(datos1) <- ~lon + lat #espaciales para graficar
-src <- CRS("+init=epsg:4326")
+datos1 <- d2[, -c(1, 4)] #datos1 solo tiene las coordenadas
+coordinates(datos1) <- ~lon + lat #crea una estructura espacial de coordenadas
+src <- CRS("+init=epsg:4326") #establece el sistema de referencia
 crs(datos1) <- src
-colombia1 <- spTransform(colombia1, crs(datos1))
+colombia1 <- spTransform(colombia1, crs(datos1)) #cambia la proyeccion del shape a la del crs elegido anteriormente
 
+#Se corta cada raster del clima para que tenga la misma extencion que el mapa de Colombia
 c1 <- crop(raster(c1), colombia1)
 c2 <- crop(raster(c2), colombia1)
 c3 <- crop(raster(c3), colombia1)
@@ -111,7 +101,7 @@ c15 <- crop(raster(c15), colombia1)
 c16 <- crop(raster(c16), colombia1)
 c17 <- crop(raster(c17), colombia1)
 
-
+#El mapa cortado anteriormente se refina para que tenga la misma forma del mapa de Colombia
 c1 <- mask(c1, colombia1)
 c2 <- mask(c2, colombia1)
 c3 <- mask(c3, colombia1)
@@ -130,53 +120,41 @@ c15 <- mask(c15, colombia1)
 c16 <- mask(c16, colombia1)
 c17 <- mask(c17, colombia1)
 
-
+#se unen los raster en una lista
 cb <- list(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17)
 
-clima <- stack(cb)
+clima <- stack(cb) #se combinan todos los rasters
 
 rm(list = listlist("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "cb", "d", "d1", "cli2"))
 
-condiciones <- extract(clima, datos1)
+condiciones <- extract(clima, datos1) #es una revision para ver si se tienen datos en las coordenadas de los registros
 head(condiciones)
 
-sindatos <- is.na(condiciones[,1])
-table(sindatos)
+sindatos <- is.na(condiciones[,1]) 
+table(sindatos) #Analizar el numero de registros sin datos climaticos
 
 rm(sindatos)
 rm(condiciones)
 
 count = 0
 
-dir.create("Graficos")
+dir.create("Graficos") #Se crea una carpeta para guardar las graficas que se van a crear
 
-for (sp in spp[1:9]){
+for (sp in spp){ #se repite el mismo proceso por cada especie en spp
         
         count = count + 1
         ocu1 <- dp[especies == sp]
-        #ocu1 <- dp[especies == spp[16]]
-        #sp <- spp[16]
         
-        if (dim(ocu1)[1] > 10){
-                
-                #esp[8]
-                # "Leptogium phyllocarpum (Pers.) Mont."
-                # esp[12]
-                # "Ramalina calcarata Krog & Swinscow"
+        if (dim(ocu1)[1] > 10){ #se filtran las especies con menos de 10 registros
                 
                 datos1 <- ocu1[, -c(1, 4)]
                 ocu1 <- ocu1[,-1]
-                
-                
                 coordinates(datos1) <- ~lon + lat #espaciales para graficar
                 src <- CRS("+init=epsg:4326")
                 crs(datos1) <- src
                 
                 mapa <- spTransform(colombia1, crs(datos1))
                 sobrelapan <- over(datos1, mapa)
-                #countrydata <- subset(datos1, !is.na(sobrelapan$FIPS)) #solo los registros que sobrelapan el poligono
-                celdas <- cellFromXY(clima[[1]], datos1)
-                datos <- datos1[!duplicated(celdas),]
                 
                 #Buffer
                 buffer <- buffer(datos, width = 100000) #bufer de 10km
@@ -187,10 +165,10 @@ for (sp in spp[1:9]){
                 areas1 <- mask(areas1, mapa) #el area exacta que coge todos los registros
                 
                 #forma2
-                k <- if(length(datos1$lat) >= 3){k = 3} else{k = 1}
+                k <- if(length(datos1$lat) >= 3){k = 3} else{k = 1} 
                 
-                fold <- kfold(datos1, k = k)
-                s <- sample(k, 1)
+                fold <- kfold(datos1, k = k) #se dividen los datos en tres aleatoriamente
+                s <- sample(k, 1) #se elige un tercio de los datos de manera aleatoria
                 ts <- datos1[fold == s, ] # el segundo bloque se usara para testear
                 tr <- datos1[fold != s, ] # los otros cuatro bloques se utlizaran en el modelo
                 if (length(tr@coords) > length(ts@coords)) {train <- tr
@@ -209,9 +187,6 @@ for (sp in spp[1:9]){
                 plot(datos, add = T, col = "red")
                 
                 
-                #se extraen las condiciones para la prueba, el training y el entorno
-                #p <- raster::extract(clima, train[, -3])
-                #ptest <- raster::extract(clima, test[, -3])
                 p <- raster::extract(clima, train)
                 ptest <- raster::extract(clima, test)
                 a <- raster::extract(clima, bg)
@@ -219,16 +194,13 @@ for (sp in spp[1:9]){
                 
                 pa <- c(rep(1, nrow(p)), rep(0, nrow(a))) #presente en el test y ausente en el entorno
                 pder <- as.data.frame(rbind(p, a))
-                #pder[is.na(pder)] <- 0
                 
+                mod <- dismo::maxent(x = pder, p = pa, factors = "biome", nbg = 5000,, args = c("-J", "-P")) #modelo de distribucion de especies
                 
-                #mod <- dismo::maxent(x = pder, p = pa, factors = "biome", nbg = 10000,, args = c("-J", "-P"))
-                mod <- dismo::maxent(x = pder, p = pa, factors = "biome", nbg = 5000,, args = c("-J", "-P"))
+                response(mod) #Ponderacion de la variacion de cada variables
+                ped1 <- predict(mod, areas1) #Extrapolacion del modelo en todo Colombia
                 
-                response(mod)
-                ped1 <- predict(mod, areas1)
-                
-                # for ggplot, we need the prediction to be a data frame 
+                # Para graficar se cambia la estructura de la prediccion a una data.frame 
                 ped1 <- as(ped1, "SpatialPixelsDataFrame")
                 dfp <- as.data.frame(ped1)
                 xmax <- max(dfp$x)
@@ -247,27 +219,16 @@ for (sp in spp[1:9]){
                 combinado <- c(p1, a1)
                 label <- c(rep(1, length(p1)), rep(0, length(a1)))
                 predic <- prediction(combinado, label)
-                #perfor <- performance(predic, "sens", "spec")
-                perfor <- performance(predic, "tpr","fpr")
-                auc <- performance(predic, "auc")
                 
-                #evaltrain <- dismo::evaluate(p = ptest, a = a, model = mod)
-                #plot(evaltrain, "ROC")
-                
-                #bdf2 <- data.frame("Sensitivity" = perfor@y.values, "Specificity" = perfor@x.values, "Cutoff" = perfor@alpha.values)
-                
-                #colnames(bdf2) <- c("Sensitivity", "Specificity", "Cutoff")
+                perfor <- performance(predic, "tpr","fpr") 
+                auc <- performance(predic, "auc") #auc del modelo
                 
                 bdf2 <- data.frame("TPR" = perfor@y.values, "FPR" = perfor@x.values, "Cutoff" = perfor@alpha.values)
                 
                 colnames(bdf2) <- c("TPR", "TFR", "Cutoff")
                 bdf2 <- data.table(bdf2)
                 
-                
-                
-                #th3 <- threshold(evaltrain, stat = "sensitivity", sensitivity = 0.95)
-                
-                AUC <- function(data = list(ptest, a), i) {
+                AUC <- function(data = list(ptest, a), i) { 
                         p1 <- predict(mod, data.frame(ptest[i,]))
                         a1 <- predict(mod, data.frame(a))
                         combinado <- c(p1, a1)
@@ -281,8 +242,8 @@ for (sp in spp[1:9]){
                         return(result[[1]])
                 }
                 
-                #bo <- boot(ptest, AUC, 500)
-                bo <- boot(ptest, AUC, 100)
+                
+                bo <- boot(ptest, AUC, 100) #Bootrap del modelo
                 d <- density(bo$t)
                 
                 bdf <- data.table(id = 1:length(bo$t), boot = bo$t)
@@ -334,19 +295,7 @@ for (sp in spp[1:9]){
                         theme(plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"))
                 
                 p4
-                ggsave(paste0(paste0(sp, count)," Curva AUC.png"), path = "/Users/javiermontanochiriboga/Documents/Javier/Packages/Neutral1/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
-                
-                #p <- plot_grid(p1, p4, p2, p3, labels = c("A", "B", "C", "D"), label_size = 12)
-                
-                #png(paste0(sp, count), height = 2000, width = 3000)
-                #plot_grid(p1, p2, p3, labels = c("A", "B", "C"), label_size = 12)
-                #dev.off()
-                
-                #ggsave(paste0(paste0(sp, count),".png"), width = 26, height = 14, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
-                
-                #save_plot(paste0(paste0(sp, count),".png"), ncol = 2, nrow = 2,  base_width = 26, base_height = 14, dpi = 700)
-                
-                #save_plot(paste0(paste0(sp, count),".png"), p, nrow = 2, ncol = 2)}else{
+                ggsave(paste0(paste0(sp, count)," Curva AUC.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)}else{
                 print(paste0(paste0("La especie ", sp), " tiene menos de 5 registros"))
         }
 }
