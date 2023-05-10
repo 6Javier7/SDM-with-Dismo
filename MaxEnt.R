@@ -129,7 +129,7 @@ cb <- list(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16
 
 clima <- stack(cb) #se combinan todos los rasters
 
-rm(list = listlist("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "cb", "d", "d1", "cli2"))
+rm(list = c("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "cb", "d", "d1", "cli2"))
 
 condiciones <- extract(clima, datos1) #es una revision para ver si se tienen datos en las coordenadas de los registros
 head(condiciones)
@@ -161,7 +161,7 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                 sobrelapan <- over(datos1, mapa)
                 
                 #Buffer
-                buffer <- buffer(datos, width = 100000) #bufer de 10km
+                buffer <- buffer(datos1, width = 100000) #bufer de 10km
                 areas <- crop(clima, extent(buffer)) #un rectangulo del area de los puntos
                 areas <- mask(areas, buffer) #el area exacta que coge todos los registros
                 
@@ -183,10 +183,10 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                 #background
                 set.seed(1)
                 u <- runif(1)
-                if (u < .6){bg <- sampleRandom(x = areas, size = 10000, na.rm = T, sp = T)} else {bg <- randomPoints(areas, 10000, p = datos)} #hacen lo mismo pero diferente
+                if (u < .6){bg <- sampleRandom(x = areas, size = 10000, na.rm = T, sp = T)} else {bg <- randomPoints(areas, 10000, p = datos1)} #hacen lo mismo pero diferente
                 plot(areas[[1]])
                 plot(bg, add = T)
-                plot(datos, add = T, col = "red")
+                plot(datos1, add = T, col = "red")
                 
                 
                 p <- raster::extract(clima, train)
@@ -296,6 +296,6 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                 
                 p4
                 ggsave(paste0(paste0(sp, count)," Curva AUC.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)}else{
-                print(paste0(paste0("La especie ", sp), " tiene menos de 5 registros"))
-        }
+                        print(paste0(paste0("La especie ", sp), " tiene menos de 5 registros"))
+                }
 }
