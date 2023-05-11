@@ -76,9 +76,9 @@ spp <- with(d1, unique(especies))
 
 colombia1 <- getData('GADM' , country = "COL", level = 1) #shape de Colombia
 cli2 <- worldclim_country("Colombia", var = 'bio', res = 0.5, path = getwd()) #datos clima para Colombia
-for (i in 1:16){assign(paste0("c", i), cli2[[i]])} #separacion de los raster del clima
+for (i in 1:19){assign(paste0("c", i), cli2[[i]])} #separacion de los raster del clima
 
-c17 <- elevation_30s("Colombia", path = getwd()) #Raster de alturas
+c20 <- elevation_30s("Colombia", path = getwd()) #Raster de alturas
 
 datos1 <- d2[, -c(1, 4)] #datos1 solo tiene las coordenadas
 coordinates(datos1) <- ~lon + lat #crea una estructura espacial de coordenadas
@@ -104,6 +104,9 @@ c14 <- crop(raster(c14), colombia1)
 c15 <- crop(raster(c15), colombia1)
 c16 <- crop(raster(c16), colombia1)
 c17 <- crop(raster(c17), colombia1)
+c18 <- crop(raster(c18), colombia1)
+c19 <- crop(raster(c19), colombia1)
+c20 <- crop(raster(c20), colombia1)
 
 #El mapa cortado anteriormente se refina para que tenga la misma forma del mapa de Colombia
 c1 <- mask(c1, colombia1)
@@ -123,22 +126,25 @@ c14 <- mask(c14, colombia1)
 c15 <- mask(c15, colombia1)
 c16 <- mask(c16, colombia1)
 c17 <- mask(c17, colombia1)
+c18 <- mask(c18, colombia1)
+c19 <- mask(c19, colombia1)
+c20 <- mask(c20, colombia1)
 
 #se unen los raster en una lista
 cb <- list(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17)
 
 clima <- stack(cb) #se combinan todos los rasters
 
-rm(list = c("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "cb", "d", "d1", "cli2"))
+rm(list = c("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "c18", "c19", "c20", "cb", "d", "d1", "cli2"))
 
 condiciones <- extract(clima, datos1) #es una revision para ver si se tienen datos en las coordenadas de los registros
 head(condiciones)
 
-sindatos <- is.na(condiciones[,1]) 
-table(sindatos) #Analizar el numero de registros sin datos climaticos
+#sindatos <- is.na(condiciones[,1]) 
+#table(sindatos) #Analizar el numero de registros sin datos climaticos
 
-rm(sindatos)
-rm(condiciones)
+#rm(sindatos)
+#rm(condiciones)
 
 count = 0
 
