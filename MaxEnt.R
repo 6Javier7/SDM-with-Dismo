@@ -108,26 +108,26 @@ crs(datos1) <- src
 colombia1 <- spTransform(colombia1, crs(datos1)) #cambia la proyeccion del shape a la del crs elegido anteriormente
 
 #Se corta cada raster del clima para que tenga la misma extencion que el mapa de Colombia
-c1 <- crop(raster(c1), colombia1)
-c2 <- crop(raster(c2), colombia1)
-c3 <- crop(raster(c3), colombia1)
-c4 <- crop(raster(c4), colombia1)
-c5 <- crop(raster(c5), colombia1)
-c6 <- crop(raster(c6), colombia1)
-c7 <- crop(raster(c7), colombia1)
-c8 <- crop(raster(c8), colombia1)
-c9 <- crop(raster(c9), colombia1)
-c10 <- crop(raster(c10), colombia1)
-c11 <- crop(raster(c11), colombia1)
-c12 <- crop(raster(c12), colombia1)
-c13 <- crop(raster(c13), colombia1)
-c14 <- crop(raster(c14), colombia1)
-c15 <- crop(raster(c15), colombia1)
-c16 <- crop(raster(c16), colombia1)
-c17 <- crop(raster(c17), colombia1)
-c18 <- crop(raster(c18), colombia1)
-c19 <- crop(raster(c19), colombia1)
-c20 <- crop(raster(c20), colombia1)
+c1 <- crop(raster(c1), colombia1) #bio1 = Annual Mean Temperature
+c2 <- crop(raster(c2), colombia1) #bio2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
+c3 <- crop(raster(c3), colombia1) #bio3 = Isothermality (BIO2/BIO7) (* 100)
+c4 <- crop(raster(c4), colombia1) #bio4 = Temperature Seasonality (standard deviation *100)
+c5 <- crop(raster(c5), colombia1) #bio5 = Max Temperature of Warmest Month
+c6 <- crop(raster(c6), colombia1) #bio6 = Min Temperature of Coldest Month
+c7 <- crop(raster(c7), colombia1) #bio7 = Temperature Annual Range (BIO5-BIO6)
+c8 <- crop(raster(c8), colombia1) #bio8 = Mean Temperature of Wettest Quarter
+c9 <- crop(raster(c9), colombia1) #bio9 = Mean Temperature of Driest Quarter
+c10 <- crop(raster(c10), colombia1) #bio10 = Mean Temperature of Warmest Quarter
+c11 <- crop(raster(c11), colombia1) #bio11 = Mean Temperature of Coldest Quarter
+c12 <- crop(raster(c12), colombia1) #bio12 = Annual Precipitation
+c13 <- crop(raster(c13), colombia1) #bio13 = Precipitation of Wettest Month
+c14 <- crop(raster(c14), colombia1) #bio14 = Precipitation of Driest Month
+c15 <- crop(raster(c15), colombia1) #bio15 = Precipitation Seasonality (Coefficient of Variation)
+c16 <- crop(raster(c16), colombia1) #bio16 = Precipitation of Wettest Quarter
+c17 <- crop(raster(c17), colombia1) #bio17 = Precipitation of Driest Quarter
+c18 <- crop(raster(c18), colombia1) #bio18 = Precipitation of Warmest Quarter
+c19 <- crop(raster(c19), colombia1) #bio19 = Precipitation of Coldest Quarter
+c20 <- crop(raster(c20), colombia1) #bio20 = Elevation
 
 #El mapa cortado anteriormente se refina para que tenga la misma forma del mapa de Colombia
 c1 <- mask(c1, colombia1)
