@@ -2,6 +2,28 @@
 
 #Paquetes
 
+#Intalar Paquetes
+install.packages("tidyverse")
+install.packages("data.table")
+install.packages("cowplot")
+install.packages("spocc")
+install.packages("raster")
+install.packages("dismo")
+install.packages("rJava")
+install.packages("rgeos")
+install.packages("grDevices")
+install.packages("rgdal")
+install.packages("boot")
+install.packages("ENMeval")
+install.packages("ROCR")
+install.packages("vcd")
+install.packages("sp")
+install.packages("maptools")
+install.packages("rgbif")
+install.packages("geodata")
+install.packages("sf")
+
+#correr paquetes
 library(tidyverse)
 library(data.table)
 library(cowplot)
