@@ -46,7 +46,7 @@ library(sf)
 
 #Datos
 
-usuarix <- "Biologx" #cuenta de gbif
+cuenta <- "Biologx" #cuenta de gbif
 contras <- "AsiliiPower" #contraseña en gbif
 correo <- "Biologx@mail.com" #email en gbif
 
@@ -65,7 +65,7 @@ keys1 <- occ_download(
         pred("hasCoordinate", TRUE),
         pred("occurrenceStatus","PRESENT"),
         format = "SIMPLE_CSV",
-        user = usuarix, pwd = contras, email = correo
+        user = cuenta, pwd = contras, email = correo
 ) #para descargar los registros
 
 keys2 <- grep("^", keys1, value = T)
@@ -291,14 +291,14 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                         theme(plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"))
                 
                 p2
-                ggsave(paste0(paste0(sp, count), " boot hist.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
+                ggsave(paste0(paste0(sp, count), " boot hist.png"), path = "Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
                 
                 
                 p3 <- ggplot(bdf, aes(sample = boot))+ stat_qq_line(colour = "grey58", linewidth = 1.0) + theme_classic() + stat_qq(colour = "coral", size = 1.6) + labs(x = "", y = "", title = paste0("QQ plot boot "), sp) +
                         theme(plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"))
                 
                 p3
-                ggsave(paste0(paste0(sp, count)," boot qqplot.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2) 
+                ggsave(paste0(paste0(sp, count)," boot qqplot.png"), path = "Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2) 
                 
                 p1 <- ggplot() +
                         geom_polygon(data = wrld, mapping = aes(x = long, y = lat, group = group), fill = "white") + geom_raster(data = dfp, aes(x = x, y = y, fill = layer)) +  scale_fill_gradientn(colors = terrain.colors(10, rev = T))  +  coord_fixed(xlim = c(xmin, xmax), ylim = c(ymin, ymax), expand = F) + # expand = F fixes weird margin
@@ -307,7 +307,7 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                         borders("state") + labs(title = paste("SDM", sp), x = "Longitud", y = "Latitud", fill = "Pontencial") + theme(legend.box.background = element_blank(), legend.box.margin = margin(5,5,5,5), plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"), legend.key = element_rect(fill = "white", colour = "white"), legend.title = element_text(colour = "grey58"))
                 
                 p1
-                ggsave(paste0(paste0(sp, count)," potencial.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
+                ggsave(paste0(paste0(sp, count)," potencial.png"), path = "Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)
                 
                 inter <- boot.ci(bo, type = "basic")
                 
@@ -322,7 +322,7 @@ for (sp in spp){ #se repite el mismo proceso por cada especie en spp
                         theme(plot.title = element_text(colour = "coral"), axis.title = element_text(colour = "grey58"))
                 
                 p4
-                ggsave(paste0(paste0(sp, count)," Curva AUC.png"), path = "/Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)}else{
+                ggsave(paste0(paste0(sp, count)," Curva AUC.png"), path = "Graficos", width = 14, height = 7, dpi = 700, units = "cm", limitsize = FALSE, scale = 2)}else{
                         print(paste0(paste0("La especie ", sp), " tiene menos de 5 registros"))
                 }
 }
